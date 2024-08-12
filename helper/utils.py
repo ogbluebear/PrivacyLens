@@ -102,16 +102,16 @@ def retry(max_retries=5, initial_delay=1, backoff_factor=2, exceptions=(Exceptio
 @CacheMemory.cache
 @retry(max_retries=16, initial_delay=8, backoff_factor=1,
        exceptions=(openai.error.OpenAIError, openai.error.RateLimitError))
-def openai_chat_completion_with_retry(engine, messages, **kwargs):
+def openai_chat_completion_with_retry(model, messages, **kwargs):
     """A wrapper function to call openai.ChatCompletion.create with retry.
     Args:
         engine: The engine to use for the completion.
         messages: [{'role': 'system'/'user'/'assistant'， 'content': '...'}, ...]
         **kwargs: max_tokens, temperature, top_p, ... (see OpenAI API documentation for details)
     """
-    response = openai.ChatCompletion.create(engine=engine, messages=messages, **kwargs)
+    response = openai.ChatCompletion.create(model=model, messages=messages, **kwargs)
     api_usage_tracker.increment_token_usage(
-        model=engine,
+        model=model,
         prompt_tokens=response.usage.prompt_tokens,
         completion_tokens=response.usage.completion_tokens
     )
